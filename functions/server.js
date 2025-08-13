@@ -5,6 +5,7 @@ const rateLimit = require('express-rate-limit');
 const config = require('./config/config');
 const logger = require('./utils/logger');
 const scraperRoutes = require('./routes/scraperRoutes');
+const serverless = require( 'serverless-http');
 
 const app = express();
 
@@ -28,7 +29,8 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
 // Rutas
-app.use('/api/v1', scraperRoutes);
+app.use('/.netlify/functions/server/api/v1', scraperRoutes);
+const handler = serverless(app);
 
 // Middleware de manejo de errores global
 app.use((err, req, res, next) => {
@@ -62,3 +64,4 @@ const server = app.listen(config.port, () => {
 });
 
 module.exports = app;
+module.exports.handler = handler;
